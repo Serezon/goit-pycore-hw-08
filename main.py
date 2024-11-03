@@ -1,3 +1,4 @@
+import pickle
 import cli_methods as cli
 import address_book
 
@@ -17,14 +18,26 @@ def help():
     exit - Close the bot.
     """
 
+def save_contacts(book, filename="addressbook.pkl"):
+    with open(filename, "wb") as f:
+        pickle.dump(book, f)
+
+def load_contacts(filename="addressbook.pkl"):
+    try:
+        with open(filename, "rb") as f:
+            return pickle.load(f)
+    except FileNotFoundError:
+        return address_book.AddressBook()
+
 def main():
-    contacts = address_book.AddressBook()
+    contacts = load_contacts()
     print("Welcome to the assistant bot!")
     while True:
         user_input = input("Enter a command: ")
         command, *args = cli.parse_input(user_input)
 
         if command in ["close", "exit"]:
+            save_contacts(contacts)
             print("Good bye!")
             break
         elif command == "hello":
